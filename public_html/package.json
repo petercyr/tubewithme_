@@ -1,0 +1,28 @@
+{
+  "name": "tubewithme",
+  "version": "0.0.1",
+  "description": "Share your youtube browsing experience with friends",
+  "homepage": "http://tubewithme.com",
+  "author": {
+    "name": "Peter Cyr",
+    "email": "peter.cyr@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petercyr/tubewithme.git"
+  },
+  "dependencies": {
+    "connect": "2.7.1",
+    "connect-redis": "1.4.5",
+    "cookie": "0.0.5",
+    "express": "3.0.4",
+    "oauth": "0.9.8",
+    "redis": "0.8.2",
+    "socket.io": "0.9.11",
+    "twit": "1.0.11"
+  },
+  "main": "server",
+  "engines": {
+    "node": ">= 0.8.x"
+  }
+}

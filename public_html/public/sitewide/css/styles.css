@@ -1,0 +1,259 @@
+
+body {
+	background: transparent url('/sitewide/images/bg.png') top left scroll;
+	padding-top: 30px;
+}
+
+/*
+* Clearfix: contain floats
+*
+* For modern browsers
+* 1. The space content is one way to avoid an Opera bug when the
+* `contenteditable` attribute is included anywhere else in the document.
+* Otherwise it causes space to appear at the top and bottom of elements
+* that receive the `clearfix` class.
+* 2. The use of `table` rather than `block` is only necessary if using
+* `:before` to contain the top-margins of child elements.
+*/
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/*
+* For IE 6/7 only
+* Include this rule to trigger hasLayout and contain floats.
+*/
+
+.clearfix {
+    *zoom: 1;
+}
+
+.container {
+	width: 978px;
+	margin: 0 auto;
+	position: relative;
+}
+
+.headLogo {
+	display: block;
+	margin: 0 auto 80px;
+	height: 123px;
+	width: 560px;
+	background: transparent url('/sitewide/images/logo.png') no-repeat;
+	text-indent: -9999em;
+}
+
+.userInfo {
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
+    border-radius: 5px 5px 5px 5px;
+    display: none;
+    float: right;
+    padding: 10px;
+    color: #fff;
+	font-size: 20px;
+	font-family: arial;
+}
+.userInfo .pic {
+	width: 48px;
+	height: 48px;
+	margin-right: 10px;
+	float: left;
+
+}
+.userInfo .name {
+	
+}
+.inputFields {
+	margin: 0 auto;
+    text-align: right;
+    width: 978px;
+}
+.inputFields .url {
+	background-color: #2B2E31;
+    border-color: -moz-use-text-color -moz-use-text-color #111111;
+    border-radius: 7px 7px 7px 7px;
+    border-style: none none inset;
+    border-width: 0 1px 1px;
+    box-shadow: 0 1px 1px 1px #222222 inset;
+    color: #6A6B6B;
+    font-size: 19px;
+    height: 52px;
+    line-height: 52px;
+    width: 490px;
+    padding-left: 10px;
+    margin-right: 10px;
+}
+
+.inputFields .url::-webkit-input-placeholder  { color:#3e4143; }
+.inputFields .url:-moz-placeholder { color:#3e4143; }
+
+.p1 {
+	width: 978px;
+	margin: 0 auto;
+	height: 265px;
+}
+.p1 img {
+	float: left;
+	margin-right: 65px;
+}
+.p1 h1 {
+	color: #fff;
+	font-family: Arial;
+	font-size: 50px;
+	font-weight: bold;
+	padding-top: 70px;
+	letter-spacing: -0.04em;
+}
+
+button.shiny-blue {
+	background-color: #759ae9;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #759ae9), color-stop(50%, #376fe0), color-stop(50%, #1a5ad9), color-stop(100%, #2463de));
+	background-image: -webkit-linear-gradient(top, #759ae9 0%, #376fe0 50%, #1a5ad9 50%, #2463de 100%);
+	background-image: -moz-linear-gradient(top, #759ae9 0%, #376fe0 50%, #1a5ad9 50%, #2463de 100%);
+	background-image: -ms-linear-gradient(top, #759ae9 0%, #376fe0 50%, #1a5ad9 50%, #2463de 100%);
+	background-image: -o-linear-gradient(top, #759ae9 0%, #376fe0 50%, #1a5ad9 50%, #2463de 100%);
+	background-image: linear-gradient(top, #759ae9 0%, #376fe0 50%, #1a5ad9 50%, #2463de 100%);
+	border-top: 1px solid #1f58cc;
+	border-right: 1px solid #1b4db3;
+	border-bottom: 1px solid #174299;
+	border-left: 1px solid #1b4db3;
+	border-radius: 7px;
+	-webkit-box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+	box-shadow: inset 0 0 2px 0 rgba(57, 140, 255, 0.8);
+	color: #fff;
+	font: bold 16px/1 "helvetica neue", helvetica, arial, sans-serif;
+	padding: 17px 15px;
+	text-shadow: 0 -1px 1px #1a5ad9;
+	vertical-align: top;
+}
+button.shiny-blue:hover {
+	background-color: #5d89e8;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5d89e8), color-stop(50%, #2261e0), color-stop(50%, #044bd9), color-stop(100%, #0d53de));
+	background-image: -webkit-linear-gradient(top, #5d89e8 0%, #2261e0 50%, #044bd9 50%, #0d53de 100%);
+	background-image: -moz-linear-gradient(top, #5d89e8 0%, #2261e0 50%, #044bd9 50%, #0d53de 100%);
+	background-image: -ms-linear-gradient(top, #5d89e8 0%, #2261e0 50%, #044bd9 50%, #0d53de 100%);
+	background-image: -o-linear-gradient(top, #5d89e8 0%, #2261e0 50%, #044bd9 50%, #0d53de 100%);
+	background-image: linear-gradient(top, #5d89e8 0%, #2261e0 50%, #044bd9 50%, #0d53de 100%);
+	cursor: pointer;
+}
+button.shiny-blue:active {
+	border-top: 1px solid #1b4db3;
+	border-right: 1px solid #174299;
+	border-bottom: 1px solid #133780;
+	border-left: 1px solid #174299;
+	-webkit-box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+	box-shadow: inset 0 0 5px 2px #1a47a0, 0 1px 0 #eeeeee;
+}
+div.hint {
+	color: #6a6b6b;
+    float: right;
+    text-align: left;
+    width: 500px;
+    margin-right: 150px;
+    font-size: 14px;
+    font-family: Arial;
+}
+div.hint ul { 
+	list-style: none; 
+	padding: 0;
+}
+div.hint ul li span.hint {
+	font-weight: bold;
+	width: 150px;
+	display: inline-block;
+}
+
+/* tube room */
+.tuberoom {
+	-webkit-box-shadow:  0px 0px 5px 0px rgba(0, 0, 0, 1);
+    box-shadow:  0px 0px 5px 0px rgba(0, 0, 0, 1);
+    background: #fff;
+}
+
+.tuberoom .cola {
+	width: 690px;
+	float: left;
+}
+
+.tuberoom .colb {
+	width: 288px;
+	float: right;
+}
+
+.tuberoom .room, .tuberoom .users .userHeader {
+	background: rgb(206,220,231);
+	background: -moz-linear-gradient(top, rgba(206,220,231,1) 0%, rgba(89,106,114,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(206,220,231,1)), color-stop(100%,rgba(89,106,114,1)));
+	background: -webkit-linear-gradient(top, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);
+	background: -o-linear-gradient(top, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);
+	background: -ms-linear-gradient(top, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);
+	background: linear-gradient(to bottom, rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=0 );
+	border-bottom: 1px solid #444444;
+	text-align: center;
+	color: #222;
+	font-size: 16px;
+	font-family: arial;
+	font-weight: bold;
+	padding: 10px;
+}
+
+.tuberoom .room .id {
+	display: block;
+	color: #fff;
+	border-top: 1px solid #85949C;
+	margin-top: 8px;
+	padding-top: 8px;
+}
+
+.tuberoom .users {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+
+}
+
+.tuberoom .users .user {
+	padding: 3px;
+	background: rgb(242,245,246);
+	background: -moz-linear-gradient(top,  rgba(242,245,246,1) 0%, rgba(227,234,237,1) 37%, rgba(200,215,220,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(242,245,246,1)), color-stop(37%,rgba(227,234,237,1)), color-stop(100%,rgba(200,215,220,1)));
+	background: -webkit-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%);
+	background: -o-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%);
+	background: linear-gradient(to bottom,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 );
+	border-bottom: 1px solid #dadada;
+}
+.tuberoom .users .user .pic {
+	float: left;
+	margin-right: 5px;
+	width: 30px;
+}
+.tuberoom .users .user .name {
+	font-family: Arial;
+	font-size: 14px;
+}
+
+.tuberoom .users .user .progressbar {
+	background: none repeat scroll 0 0 #000000;
+    height: 5px;
+    margin: 5px 5px 0 35px;
+    position: relative;
+}
+
+.tuberoom .users .user .progressbar .expand {
+	background: none repeat scroll 0 0 #2187E7;
+    box-shadow: 0 0 10px 1px rgba(50, 152, 255, 0.8);
+    height: 3px;
+    margin: 1px;
+    position: absolute;
+    width: 240px;
+}
