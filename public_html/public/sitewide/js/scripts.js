@@ -3,7 +3,7 @@ var tube = null;
 
 $(function() {
 	tube = new Tube({
-		sio: 'http://tubewithme.local:8080'
+		sio: 'http://localhost:8080'
 	});
 });
 
@@ -18,9 +18,9 @@ function parseUrl( url ) {
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
     var match = url.match(regExp);
     if ( match && match[7].length == 11 ) {
-        return { type: 'youtube', id: match[7] };
+        return { type: 'youtube', vid: match[7] };
     } else {
-        return { type: 'tubeid', id: url };
+        return { type: 'tubeid', vid: url };
     }
 
 };
@@ -32,7 +32,7 @@ $(function() {
 
 		if( tube.user ) {
 			if( !tube.checkQueue() ) {
-				tube.launch( vid.type, vid.id );
+				tube.launch( vid.type, vid.vid );
 			}
 		} else {
 			Tube.Utils.Cookie.set('queue', JSON.stringify(vid) );

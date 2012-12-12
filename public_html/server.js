@@ -34,9 +34,18 @@ var oa = new oauth(
 	"cuCyJXs7if6BrR5rUjg",
 	"OgccVC8LnD0EIKcOCKOjdr4FePj8ALdlm78QocQTww",
 	"1.0",
-	"http://tubewithme.local:8080/auth/twitter/callback",
+	"http://localhost:8080/auth/twitter/callback",
 	"HMAC-SHA1"
 );
+
+var loginCheck = function( req, res, next ) {
+	if( req.session.oauth ) {
+		// already authed. skip
+		res.redirect('/');
+	} else {
+		next();
+	}
+}
 
 // Twitter auth route
 app.get('/auth/twitter', function(req, res) {
@@ -54,64 +63,59 @@ app.get('/auth/twitter', function(req, res) {
 });
 
 app.get('/auth/twitter/callback', function(req, res, next) {
-	if( req.session.oauth ) {
-		req.session.oauth.verifier = req.query.oauth_verifier;
-		var oauth = req.session.oauth;
 
-		oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
-			if( error ) {
-				console.log('error');
-				res.send('something broke');
-			} else {
-				req.session.oauth.access_token = oauth_access_token;
-				req.session.oauth.access_token_secret = oauth_access_token_secret;
-				req.session.user = results;
+	req.session.oauth.verifier = req.query.oauth_verifier;
+	var oauth = req.session.oauth;
 
-				var Twitter = new twit({
-					consumer_key: _twitterConsumerKey,
-					consumer_secret: _twitterConsumerSecret,
-					access_token: req.session.oauth.access_token,
-					access_token_secret: req.session.oauth.access_token_secret
+	oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
+		if( error ) {
+			console.log('error');
+			res.send('something broke');
+		} else {
+			req.session.oauth.access_token = oauth_access_token;
+			req.session.oauth.access_token_secret = oauth_access_token_secret;
+			req.session.user = results;
+
+			var Twitter = new twit({
+				consumer_key: _twitterConsumerKey,
+				consumer_secret: _twitterConsumerSecret,
+				access_token: req.session.oauth.access_token,
+				access_token_secret: req.session.oauth.access_token_secret
+			});
+
+			Twitter.get('account/verify_credentials', function(err, reply) {
+				var uid = reply['id_str'];
+
+				db.get.userHash(uid, function(err, user) {
+					/* 
+						if user doesn't exist, grab the user object from twitter and save the parts
+						we want to keep in the user object. Also add a few user properties to the
+						session user information
+					*/
+
+					//console.log( req.session.user );
+					req.session.user.name = reply['name'];
+					req.session.user.profile_image = reply['profile_image_url'];
+					console.log( req.session.user );
+
+					req.session.touch().save();
+
+					if( user === null ) {
+						var userObj = {
+							"uid": reply['id_str'],
+							"name": reply['name'],
+							"screen_name": reply['screen_name'],
+							"profile_image": reply['profile_image_url']
+						};
+						db.save.userSetAdd(uid);
+						db.save.userHashSet(uid, userObj);
+					}
+
+					res.redirect("/");
 				});
-
-				Twitter.get('account/verify_credentials', function(err, reply) {
-					var uid = reply['id_str'];
-
-					db.get.userHash(uid, function(err, user) {
-						/* 
-							if user doesn't exist, grab the user object from twitter and save the parts
-							we want to keep in the user object. Also add a few user properties to the
-							session user information
-						*/
-
-						//console.log( req.session.user );
-						req.session.user.name = reply['name'];
-						req.session.user.profile_image = reply['profile_image_url'];
-						console.log( req.session.user );
-
-						req.session.touch().save();
-
-						if( user === null ) {
-							var userObj = {
-								"uid": reply['id_str'],
-								"name": reply['name'],
-								"screen_name": reply['screen_name'],
-								"profile_image": reply['profile_image_url']
-							};
-							db.save.userSetAdd(uid);
-							db.save.userHashSet(uid, userObj);
-						}
-
-						res.redirect("/");
-					});
-					
-				});
-				
-			}
-		});
-	} else {
-		next( new Error("You're not supposed to be here") );
-	}
+			});
+		}
+	});
 });
 
 // Route all /t/xxxxxxxxx requests to home page
@@ -167,29 +171,34 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	/* generate a new room, join it and return it to the user/creator */
-	socket.on('requestRoomId', function() {
+	socket.on('requestRoomId', function(vid) {
 
 		
 		/* Generate Random Room Name */
-		var room = "";
+		var roomId = "";
 	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 	    for( var i=0; i < 15; i++ )
-	        room += possible.charAt(Math.floor(Math.random() * possible.length));
+	        roomId += possible.charAt(Math.floor(Math.random() * possible.length));
 
-	    socket.set('room', room, function() {
+	    socket.set('room', roomId, function() {
 	    	console.log( 'room ' + room + ' saved');
 	    });
 
 	    // Join room
-	    socket.join( room );
+	    socket.join( roomId );
 
 	    // Send room ID back to client
-		socket.emit( 'newRoomId', room );
+		socket.emit( 'newRoomId', roomId );
 
 		// Add user to room
-		db.save.tubeRoomSetAddUser(room, hs.session.user.user_id);
-		console.log(room, hs.session.user.user_id);
+		db.save.tubeRoomSetAddUser(roomId, hs.session.user.user_id);
+		
+		// Set room video
+		db.save.tubeRoomSetVideo( roomId, vid );
+
+		// Broadcast to all members the vid of the new video
+		socket.broadcast.to(data.roomId).emit('updateRoomVideo', vid );
 	});
 
 	/* join room */
@@ -200,7 +209,7 @@ io.sockets.on('connection', function(socket) {
 		// add self to room list
 		console.log('adding self to tubeRoomSetAddUser');
 		db.save.tubeRoomSetAddUser(room, hs.session.user.user_id);
-		console.log('added?');
+
 
 		/*
 			bad attempt at redis... fetch an array of user IDs
@@ -210,8 +219,13 @@ io.sockets.on('connection', function(socket) {
 		db.get.tubeRoomGetMembers(room, function(err, members) {
 
 			console.log('Contents of set for room: ' + room );
-			
+			console.log('typeof members: ' + typeof members);
 			console.log( members );
+
+			if(!members) {
+				members = [];
+			}
+
 			for( var i=0; i<members.length; i++ ) {
 				db.get.userHash( members[i], function( err, user ) {
 					socket.emit( 'roomUser', user );
@@ -225,6 +239,7 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('setRoomVid', function( data ) {
 		console.log('setRoomVid data:' + data );
+		console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		socket.broadcast.to(data.roomId).emit('updateRoomVideo', data.vid );
 

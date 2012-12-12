@@ -24,13 +24,14 @@ exports.save = {
 		console.log('write userHash set');
 	},
 	/* tubewithme sessions */
-	tubeRoomSetAddUser: function(id, roomData) {
-		console.log('tubeRoomSetAddUser id: ' + id + ' roomData: ' + roomData);
-		client.sadd("tuberoom:" + id, roomData, redis.print);
+	tubeRoomSetAddUser: function(roomId, uid) {
+		console.log('typeof uid: ' + typeof uid);
+		console.log('add to room : ' + roomId + ' user: ' + uid);
+		client.sadd("tuberoom:" + roomId, uid, redis.print);
 		console.log('join room');
 	},
-	tubeRoomSetVideo: function(room, video) {
-		client.set("tuberoom:" + room, video);
+	tubeRoomSetVideo: function(roomId, vid) {
+		client.set("tuberoom:" + roomId + ':vid', vid);
 	}
 };
 

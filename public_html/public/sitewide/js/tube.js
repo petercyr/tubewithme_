@@ -7,7 +7,7 @@ Tube = function( conf, vid ) {
 	this.type = null;
 
 	this.conf = $.extend({
-		sio: 'http://tubewithme.local:8080'
+		sio: 'http://localhost:8080'
 	}, conf);
 
 	this.socket = io.connect( this.conf.sio );
@@ -67,6 +67,8 @@ Tube.prototype.launch = function(type, vid) {
 		self.roomId = vid;
 	}
 
+	console.log('launch type/vid', type, vid );
+
 	/* set video id, get object containing the type of video (youtube or tubewithme) and the ID */
 	
 	$('.p1, .inputFields').hide();
@@ -96,7 +98,8 @@ Tube.prototype.launch = function(type, vid) {
 		 */
 		if( self.type == 'youtube' ) {
 			console.log('youtube video. requesting room');
-			self.requestRoomId();
+			/* request a random room ID and pass the initial vid to it */
+			self.requestRoomId( self.vid );
 			console.log('self.vid', self.vid);
 		} else {
 			console.log('internal vid.. joining room', self.roomId );
@@ -121,7 +124,7 @@ Tube.prototype.launch = function(type, vid) {
 			start playing the video we launched in the first place
 		*/
 		console.log( 'newRoomId setRoom vid', 'data:', data, 'vid: ', self.vid);
-		self.setRoomVid( data, self.vid );
+		// self.setRoomVid( data, self.vid );
 	});
 
 	/* Receive room users */
@@ -148,10 +151,8 @@ Tube.prototype.launch = function(type, vid) {
 
 };
 
-Tube.prototype.requestRoomId = function(video) {
-	console.log('requesting room');
-	this.socket.emit('requestRoomId');
-	//this.setRoomVid( video );
+Tube.prototype.requestRoomId = function(vid) {
+	this.socket.emit('requestRoomId', vid);
 };
 
 Tube.prototype.setRoomVid = function( roomId, vid ) {
