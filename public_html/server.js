@@ -166,12 +166,12 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('updateUserPlayerStatus', function(data) {
-		console.log( data );
+		console.log( JSON.stringify(data) );
 		socket.broadcast.to(data.room).emit('userUpdates', data );
 	});
 
 	/* generate a new room, join it and return it to the user/creator */
-	socket.on('requestRoomId', function(vid) {
+	socket.on('createTubeRoom', function(vid) {
 
 		
 		/* Generate Random Room Name */
@@ -181,44 +181,54 @@ io.sockets.on('connection', function(socket) {
 	    for( var i=0; i < 15; i++ )
 	        roomId += possible.charAt(Math.floor(Math.random() * possible.length));
 
-	    socket.set('room', roomId, function() {
-	    	console.log( 'room ' + room + ' saved');
-	    });
-
 	    // Join room
 	    socket.join( roomId );
 
-	    // Send room ID back to client
+	    // Send room ID back to client.. confirmation that it happened??
 		socket.emit( 'newRoomId', roomId );
 
-		// Add user to room
+		// REDIS: add user to room
 		db.save.tubeRoomSetAddUser(roomId, hs.session.user.user_id);
 		
-		// Set room video
+		// REDIS: set room video
 		db.save.tubeRoomSetVideo( roomId, vid );
 
-		// Broadcast to all members the vid of the new video
-		socket.broadcast.to(data.roomId).emit('updateRoomVideo', vid );
+		/* 
+			Broadcast to all members the vid of the new video
+			This may be unnecessary since this is requestRoom
+			part and there is no one in the room yet to receive
+			the broadcasted information..
+		*/
+		socket.broadcast.to(roomId).emit('updateRoomVideo', vid );
+
+		/*
+			For the sake of keeping things consistent in the way user
+			is created in the front end, i'll fetch myself and broadcast
+			my user hash to myself
+			REDIS: get user
+		*/
+		db.get.userHash( hs.session.user.user_id, function( err, user ) {
+			socket.emit( 'roomUser', user );
+		});
+
 	});
 
 	/* join room */
-	socket.on('joinRoom', function(room) {
-		// join room
-		console.log( hs.session.user.name + ' joined ' + room );
+	socket.on('joinRoom', function(roomId) {
 
-		// add self to room list
-		console.log('adding self to tubeRoomSetAddUser');
-		db.save.tubeRoomSetAddUser(room, hs.session.user.user_id);
+		socket.join( roomId );
+		socket.emit('roomJoined', roomId);
 
+		// REDIS: add user to room
+		db.save.tubeRoomSetAddUser(roomId, hs.session.user.user_id);
 
 		/*
-			bad attempt at redis... fetch an array of user IDs
-			in a room and for each one do another request for its hash.
-			broadcast each user independently...
+			Get all users in the room and loop through them. 
+			Emit each result to the user
 		*/
-		db.get.tubeRoomGetMembers(room, function(err, members) {
+		db.get.tubeRoomGetMembers(roomId, function(err, members) {
 
-			console.log('Contents of set for room: ' + room );
+			console.log('Contents of set for room: ' + roomId );
 			console.log('typeof members: ' + typeof members);
 			console.log( members );
 
@@ -233,8 +243,17 @@ io.sockets.on('connection', function(socket) {
 			}
 			
 		});
-		socket.join( room );
-		socket.emit('roomJoined', room);
+
+		// Broadcast to everyone else that I joined
+		db.get.userHash( hs.session.user.user_id, function( err, user ) {
+			socket.broadcast.to(roomId).emit('roomUser', user );
+		});
+
+		// Retrieve current video in the room
+		db.get.tubeRoomVideo( roomId, function( err, vid ) {
+			socket.emit( 'updateRoomVideo', vid );
+		});
+
 	});
 
 	socket.on('setRoomVid', function( data ) {
@@ -242,7 +261,6 @@ io.sockets.on('connection', function(socket) {
 		console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		socket.broadcast.to(data.roomId).emit('updateRoomVideo', data.vid );
-
 	});
 
 });

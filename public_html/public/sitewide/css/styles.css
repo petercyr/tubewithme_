@@ -231,6 +231,7 @@ div.hint ul li span.hint {
 	background: linear-gradient(to bottom,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%);
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 );
 	border-bottom: 1px solid #dadada;
+	position: relative;
 }
 .tuberoom .users .user .pic {
 	float: left;
@@ -256,4 +257,25 @@ div.hint ul li span.hint {
     margin: 1px;
     position: absolute;
     width: 240px;
+}
+
+.tuberoom .users .user .state {
+	height: 9px;
+    position: absolute;
+    right: 88px;
+    top: 5px;
+    width: 7px;
+	background: transparent url(/sitewide/images/player_controls.png) no-repeat;
+}
+.tuberoom .users .user .state.playing {
+	background-position: -8px -85px;
+}
+.tuberoom .users .user .state.paused {
+	background-position: -23px -85px;
+}
+.tuberoom .users .user .time {
+	font-size: 9px;
+    position: absolute;
+    right: 30px;
+    top: 3px;
 }

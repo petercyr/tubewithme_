@@ -99,7 +99,7 @@ Tube.prototype.launch = function(type, vid) {
 		if( self.type == 'youtube' ) {
 			console.log('youtube video. requesting room');
 			/* request a random room ID and pass the initial vid to it */
-			self.requestRoomId( self.vid );
+			self.createTubeRoom( self.vid );
 			console.log('self.vid', self.vid);
 		} else {
 			console.log('internal vid.. joining room', self.roomId );
@@ -129,8 +129,10 @@ Tube.prototype.launch = function(type, vid) {
 
 	/* Receive room users */
 	this.socket.on('roomUser', function(data) {
-		console.log( data );
-		self.roomUsers[data.uid] = new Tube.User(data, self);
+		// only recreate the user locally if he doesn't already exist
+		if( !(data.uid in self.roomUsers) ) {
+			self.roomUsers[data.uid] = new Tube.User(data, self);
+		}
 	});
 
 	/* receive the video currently playing in the room */
@@ -145,14 +147,17 @@ Tube.prototype.launch = function(type, vid) {
 	});
 
 	/* Listens for video changes */
-	this.socket.on('updateRoomVideo', function(data) {
-		self.player.playVideoById( data );
+	this.socket.on('updateRoomVideo', function( vid) {
+		console.log('updateRoomVideo:' + vid);
+		self.vid = vid;
+		console.log('self.player', self.player);
+		self.player.playVideoById( vid );
 	});
 
 };
 
-Tube.prototype.requestRoomId = function(vid) {
-	this.socket.emit('requestRoomId', vid);
+Tube.prototype.createTubeRoom = function(vid) {
+	this.socket.emit('createTubeRoom', vid);
 };
 
 Tube.prototype.setRoomVid = function( roomId, vid ) {
@@ -208,6 +213,7 @@ Tube.Player.prototype.init = function() {
 	this.player.addEventListener('onError', 'tube.player.onError');
 
 	this.player.loadVideoById( this.parent.vid );
+	this.player.mute();
 	// this.player.cueVideoById( this.parent.vid );
 	// ytplayer.addEventListener('')
 	
@@ -232,23 +238,33 @@ Tube.Player.prototype.onPlayerStateChange = function(newState) {
 	switch( newState ) {
 		case -1:
 			console.log( 'not started' );
+			this.reportStatus();
+			this.startReportingPlayerStatus(2000);
 			break;
 		case 0:
 			console.log( 'ended' );
+			this.reportStatus();
+			this.startReportingPlayerStatus(2000);
 			break;
 		case 1:
 			console.log( 'playing' );
-			this.startReportingPlayerStatus();
+			this.reportStatus();
+			this.startReportingPlayerStatus(500);
 			break;
 		case 2:
 			console.log( 'buffering or paused' );
-			this.stopReportingPlayerStatus();
+			this.reportStatus();
+			this.startReportingPlayerStatus(2000);
 			break;
 		case 3:
 			console.log( 'buffering' );
+			this.reportStatus();
+			this.startReportingPlayerStatus(2000);
 			break;
 		case 5:
 			console.log( 'queued' );
+			this.reportStatus();
+			this.startReportingPlayerStatus(2000);
 			break;
 	}
 };
@@ -258,16 +274,28 @@ Tube.Player.prototype.updatePlayerStatus = function() {
 	this.playerStatus.videoCurrentTime = this.player.getCurrentTime();
 };
 
-Tube.Player.prototype.startReportingPlayerStatus = function() {
+Tube.Player.prototype.reportStatus = function() {
+	
 	var self = this;
 
+	self.parent.socket.emit('updateUserPlayerStatus', {
+		user: self.parent.user.user_id,
+		room: self.parent.roomId,
+		playerStatus: self.playerStatus
+	} );
+};
+
+Tube.Player.prototype.startReportingPlayerStatus = function( interval ) {
+	var self = this;
+
+	// clear before starting a new one
+	clearInterval( this.updateInterval );
+
+	interval = interval || 500;
+
 	self.updateInterval = setInterval( function() {
-		self.parent.socket.emit('updateUserPlayerStatus', {
-			user: self.parent.user.user_id,
-			room: self.parent.roomId,
-			playerStatus: self.playerStatus
-		} );
-	}, 500);
+		self.reportStatus();
+	}, interval);
 };
 
 Tube.Player.prototype.stopReportingPlayerStatus = function() {
@@ -292,6 +320,7 @@ Tube.Player.prototype.addControls = function() {
 
 	this.container.find('.load').click( function() {
 		self.player.loadVideoById( $('.youtubeUrl').val() );
+		self.parent.setRoomVid( self.roomId, $('.youtubeUrl').val() );
 	});
 };
 
