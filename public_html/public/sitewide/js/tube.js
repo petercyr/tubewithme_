@@ -47,7 +47,7 @@ Tube.prototype.checkQueue = function() {
 		queue = JSON.parse(queue);
 
 		Tube.Utils.Cookie.remove('queue');
-		console.log('queue', queue);
+		//console.log('queue', queue);
 		self.launch(queue.type, queue.vid);
 		return true;
 	}
@@ -67,7 +67,7 @@ Tube.prototype.launch = function(type, vid) {
 		self.roomId = vid;
 	}
 
-	console.log('launch type/vid', type, vid );
+	//console.log('launch type/vid', type, vid );
 
 	/* set video id, get object containing the type of video (youtube or tubewithme) and the ID */
 	
@@ -97,12 +97,12 @@ Tube.prototype.launch = function(type, vid) {
 			and join it
 		 */
 		if( self.type == 'youtube' ) {
-			console.log('youtube video. requesting room');
+			//console.log('youtube video. requesting room');
 			/* request a random room ID and pass the initial vid to it */
 			self.createTubeRoom( self.vid );
-			console.log('self.vid', self.vid);
+			//console.log('self.vid', self.vid);
 		} else {
-			console.log('internal vid.. joining room', self.roomId );
+			//console.log('internal vid.. joining room', self.roomId );
 			self.joinRoom( self.roomId );
 		}
 
@@ -123,7 +123,7 @@ Tube.prototype.launch = function(type, vid) {
 			since we just made this room, lets go ahead and
 			start playing the video we launched in the first place
 		*/
-		console.log( 'newRoomId setRoom vid', 'data:', data, 'vid: ', self.vid);
+		//console.log( 'newRoomId setRoom vid', 'data:', data, 'vid: ', self.vid);
 		// self.setRoomVid( data, self.vid );
 	});
 
@@ -145,7 +145,7 @@ Tube.prototype.launch = function(type, vid) {
 
 	/* receive the video currently playing in the room */
 	this.socket.on('roomDetails', function(data) {
-		console.log( data );
+		//console.log( data );
 	});
 
 	/* confirmation of joined room */
@@ -156,9 +156,9 @@ Tube.prototype.launch = function(type, vid) {
 
 	/* Listens for video changes */
 	this.socket.on('updateRoomVideo', function( vid) {
-		console.log('updateRoomVideo:' + vid);
+		//console.log('updateRoomVideo:' + vid);
 		self.vid = vid;
-		console.log('self.player', self.player);
+		//console.log('self.player', self.player);
 		self.player.playVideoById( vid );
 	});
 
@@ -169,7 +169,7 @@ Tube.prototype.createTubeRoom = function(vid) {
 };
 
 Tube.prototype.setRoomVid = function( roomId, vid ) {
-	console.log('setRoomVid: ', { roomId: roomId, vid: vid });
+	//console.log('setRoomVid: ', { roomId: roomId, vid: vid });
 	var data = {
 		roomId: roomId,
 		vid: vid
@@ -178,7 +178,7 @@ Tube.prototype.setRoomVid = function( roomId, vid ) {
 };
 
 Tube.prototype.joinRoom = function( roomId ) {
-	console.log('joinRoom:', roomId );
+	//console.log('joinRoom:', roomId );
 	this.socket.emit( 'joinRoom', roomId );
 };
 
@@ -230,8 +230,8 @@ Tube.Player.prototype.init = function() {
 	}, 200);
 
 	self.parent.socket.on('userUpdates', function(data) {
-		console.log( data );
-		console.log( 'self', self );
+		//console.log( data );
+		//console.log( 'self', self );
 		self.parent.roomUsers[data.user].updateUserStatus( data );
 	});
 };
@@ -245,32 +245,32 @@ Tube.Player.prototype.onPlayerStateChange = function(newState) {
 	this.playerStatus.playerStatus = newState;
 	switch( newState ) {
 		case -1:
-			console.log( 'not started' );
+			//console.log( 'not started' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(2000);
 			break;
 		case 0:
-			console.log( 'ended' );
+			//console.log( 'ended' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(2000);
 			break;
 		case 1:
-			console.log( 'playing' );
+			//console.log( 'playing' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(500);
 			break;
 		case 2:
-			console.log( 'buffering or paused' );
+			//console.log( 'buffering or paused' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(2000);
 			break;
 		case 3:
-			console.log( 'buffering' );
+			//console.log( 'buffering' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(2000);
 			break;
 		case 5:
-			console.log( 'queued' );
+			//console.log( 'queued' );
 			this.reportStatus();
 			this.startReportingPlayerStatus(2000);
 			break;
@@ -311,7 +311,7 @@ Tube.Player.prototype.stopReportingPlayerStatus = function() {
 };
 
 Tube.Player.prototype.onError = function(error) {
-	console.log( error );
+	//console.log( error );
 };
 
 Tube.Player.prototype.addControls = function() {
