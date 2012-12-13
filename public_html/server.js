@@ -24,6 +24,7 @@ app.use( app.router );
 app.use( express.errorHandler( { dumpExceptions: true, showStack: true } ) );
 app.use( express.static(__dirname+'/public'));
 
+io.set('log level', 1); // reduce logging
 
 var oa = new oauth(
 	"https://api.twitter.com/oauth/request_token",
