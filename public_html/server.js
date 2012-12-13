@@ -31,7 +31,7 @@ var oa = new oauth(
 	keys.twitterConsumerKey,
 	keys.twitterConsumerSecret,
 	"1.0",
-	"http://localhost:8080/auth/twitter/callback",
+	"http://http://ec2-184-72-81-245.compute-1.amazonaws.com/auth/twitter/callback",
 	"HMAC-SHA1"
 );
 
