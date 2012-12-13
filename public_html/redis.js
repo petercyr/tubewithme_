@@ -46,3 +46,9 @@ exports.get = {
 		client.get("tuberoom:" + roomId + ':vid', callback);
 	}
 };
+
+exports.remove = {
+	userFromRoom: function( uid, roomId ) {
+		client.srem("tuberoom:" + roomId, uid);
+	}
+}

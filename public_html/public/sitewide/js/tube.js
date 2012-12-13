@@ -7,7 +7,7 @@ Tube = function( conf, vid ) {
 	this.type = null;
 
 	this.conf = $.extend({
-		sio: 'http://localhost:8080'
+		sio: '/'
 	}, conf);
 
 	this.socket = io.connect( this.conf.sio );
@@ -133,6 +133,14 @@ Tube.prototype.launch = function(type, vid) {
 		if( !(data.uid in self.roomUsers) ) {
 			self.roomUsers[data.uid] = new Tube.User(data, self);
 		}
+	});
+
+	/* Receive user disconnection msg */
+	this.socket.on('userDisconnected', function(uid) {
+		self.roomUsers[uid].container.fadeOut('slow', function() {
+			self.roomUsers[uid].container.remove();
+			delete self.roomUsers[uid];
+		});
 	});
 
 	/* receive the video currently playing in the room */
@@ -310,17 +318,30 @@ Tube.Player.prototype.addControls = function() {
 
 	var self = this;
 
-	this.container.find('.play').click( function() {
-		self.player.playVideo();
+	$('.controls .playpause').click( function() {
+		
+		if( jQuery(this).hasClass('pause') ) {
+			self.player.playVideo();
+		} else {
+			self.player.pauseVideo();
+		}
+		jQuery(this).toggleClass('pause');
 	});
 
-	this.container.find('.pause').click( function() {
-		self.player.pauseVideo();
-	});
-
+		
 	this.container.find('.load').click( function() {
-		self.player.loadVideoById( $('.youtubeUrl').val() );
-		self.parent.setRoomVid( self.roomId, $('.youtubeUrl').val() );
+		self.player.loadVideoById( parseUrl( parseUrl( $('.youtubeUrl').val() ).vid ) );
+		self.parent.setRoomVid( self.roomId, parseUrl( $('.youtubeUrl').val() ).vid );
 	});
 };
 
+function rectime(sec) {
+	var hr = Math.floor(sec / 3600);
+	var min = Math.floor((sec - (hr * 3600))/60);
+	sec -= ((hr * 3600) + (min * 60));
+	sec += ''; min += '';
+	while (min.length < 2) {min = '0' + min;}
+	while (sec.length < 2) {sec = '0' + sec;}
+	hr = (hr)?':'+hr:'';
+	return hr + min + ':' + sec;
+}

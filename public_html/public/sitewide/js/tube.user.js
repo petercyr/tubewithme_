@@ -64,7 +64,7 @@ Tube.User.prototype.updateUserStatus = function( userData ) {
 		case 5: 	self.pause(); /*console.log( 'queued' );*/ break;
 	}
 
-	self.time.html( userData.playerStatus.videoCurrentTime.toString() + '/' + userData.playerStatus.videoDuration.toString() );
+	self.time.html( rectime( Math.floor( userData.playerStatus.videoCurrentTime ) ) + '/' + rectime ( Math.floor( userData.playerStatus.videoDuration ) ) );
 };
 
 Tube.User.prototype.pause = function() {
@@ -74,3 +74,4 @@ Tube.User.prototype.pause = function() {
 Tube.User.prototype.play = function() {
 	this.state.removeClass('paused').addClass('playing');
 }
+

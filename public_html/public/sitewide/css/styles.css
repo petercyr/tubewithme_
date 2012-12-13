@@ -1,7 +1,7 @@
 
 body {
 	background: transparent url('/sitewide/images/bg.png') top left scroll;
-	padding-top: 30px;
+	padding-top: 15px;
 }
 
 /*
@@ -39,16 +39,14 @@ body {
 	width: 978px;
 	margin: 0 auto;
 	position: relative;
+	transparent url(/sitewide/images/share_id.png) no-repeat 558px 105px
 }
 
-.headLogo {
-	display: block;
-	margin: 0 auto 80px;
-	height: 123px;
-	width: 560px;
-	background: transparent url('/sitewide/images/logo.png') no-repeat;
-	text-indent: -9999em;
+.head {
+	margin-bottom: 85px;
 }
+
+.headLogo img { width: 400px; }
 
 .userInfo {
 	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
@@ -59,6 +57,7 @@ body {
     color: #fff;
 	font-size: 20px;
 	font-family: arial;
+	margin-top: 10px;
 }
 .userInfo .pic {
 	width: 48px;
@@ -82,7 +81,7 @@ body {
     border-style: none none inset;
     border-width: 0 1px 1px;
     box-shadow: 0 1px 1px 1px #222222 inset;
-    color: #6A6B6B;
+    color: #AAAAAA;
     font-size: 19px;
     height: 52px;
     line-height: 52px;
@@ -262,8 +261,8 @@ div.hint ul li span.hint {
 .tuberoom .users .user .state {
 	height: 9px;
     position: absolute;
-    right: 88px;
-    top: 5px;
+    right: 80px;
+    top: 13px;
     width: 7px;
 	background: transparent url(/sitewide/images/player_controls.png) no-repeat;
 }
@@ -274,8 +273,97 @@ div.hint ul li span.hint {
 	background-position: -23px -85px;
 }
 .tuberoom .users .user .time {
-	font-size: 9px;
+	font-size: 11px;
     position: absolute;
-    right: 30px;
-    top: 3px;
+    right: 12px;
+    top: 10px;
+}
+
+.tuberoom .videoContainer {
+	background-color: 000;
+}
+
+.tuberoom .player {
+	height: 448px;
+}
+
+.tuberoom .controls {
+	background: rgb(167,207,223);
+	background: -moz-linear-gradient(top, rgba(167,207,223,1) 0%, rgba(35,83,138,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(167,207,223,1)), color-stop(100%,rgba(35,83,138,1)));
+	background: -webkit-linear-gradient(top, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
+	background: -o-linear-gradient(top, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
+	background: -ms-linear-gradient(top, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
+	background: linear-gradient(to bottom, rgba(167,207,223,1) 0%,rgba(35,83,138,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a7cfdf', endColorstr='#23538a',GradientType=0 );
+	padding: 5px;
+}
+.tuberoom .controls a {
+	display: inline-block;
+	width: 46px;
+	height: 45px;
+	background: transparent url(/sitewide/images/player_controls.png) no-repeat;
+	cursor: pointer;
+	text-indent: -99999em;
+}
+
+.tuberoom .controls a.playpause {
+	background-position: -127px -3px;
+}
+.tuberoom .controls a.playpause:active {
+	background-position: -127px -54px;
+}
+
+.tuberoom .controls a.playpause.pause {
+	background-position: -78px -3px;
+}
+
+.tuberoom .controls a.playpause.pause:active {
+	background-position: -77px -54px;
+}
+
+.tuberoom .controls .youtubeUrl {
+    float: right;
+    font-size: 10px;
+    height: 24px;
+    margin-top: 7px;
+    padding-left: 4px;
+    width: 500px;
+}
+.tuberoom .controls .load {
+	float: right;
+	-moz-box-shadow:inset 0px 1px 2px -7px #ffffff;
+	-webkit-box-shadow:inset 0px 1px 2px -7px #ffffff;
+	box-shadow:inset 0px 1px 2px -7px #ffffff;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
+	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
+	background-color:#ededed;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	display:inline-block;
+	color:#222;
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:5px 27px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffffff;
+	height: auto;
+	text-indent: 0;
+	text-align: center;
+	margin-top: 8px;
+	margin-left: 10px;
+	margin-right: 8px;
+}
+.tuberoom .controls .load:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
+	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
+	background-color:#dfdfdf;
+}
+.tuberoom .controls .load:active {
+	position:relative;
+	top:1px;
 }

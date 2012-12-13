@@ -13,19 +13,21 @@
 		<script type="text/javascript" src="/sitewide/js/scripts.js"></script>
 
 		<link rel="stylesheet" href="/sitewide/css/styles.css" type="text/css"/>
-		<script>
-			var tubeId = '';
-		</script>
 	</head>
 	<body>
 		<div class="container">
-			<div class="userInfo clearfix">
-				<img class="pic" />
-				Logged in as: 
-				<span class="name"></span>
-			</div>
 
-			<a class="headLogo" href="/">TubeWithMe - Home</a>
+			<div class="head">
+				<div class="userInfo clearfix">
+					<img class="pic" />
+					Logged in as: 
+					<span class="name"></span>
+				</div>
+
+				<a href="/" class="headLogo">
+					<img src="/sitewide/images/logo.png">
+				</a>
+			</div>
 
 			
 			<div class="p1">
@@ -35,7 +37,7 @@
 			</div>
 
 			<div class="inputFields clearfix">
-				<input placeholder="Enter youtube url or tubewithme id" type="text" class="url" value="http://www.youtube.com/watch?v=diP-o_JxysA"/> <button class="startWatching shiny-blue">Start Watching</button>
+				<input placeholder="Enter youtube url or tubewithme id" type="text" class="url" /> <button class="startWatching shiny-blue">Start Watching</button>
 				<div class="hint">
 					<ul>
 						<li><span class="hint">youtube url</span>http://www.youtube.com/watch?v=yM-R7ZY0s7I</li>

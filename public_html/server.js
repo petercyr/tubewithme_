@@ -10,24 +10,20 @@ var express 		= require('express'),
 	client 			= redis.createClient(),
 	db 				= require('./redis.js'),
 	twit 			= require('twit'),
-	keys 			= require('.keys');
+	keys 			= require('./.keys');
 
 
-var _twitterConsumerKey = "cuCyJXs7if6BrR5rUjg";
-var _twitterConsumerSecret = "OgccVC8LnD0EIKcOCKOjdr4FePj8ALdlm78QocQTww";
+/* App Settings */
+app.use( express.cookieParser('thissecretrocks') );
+app.use( express.session( {
+	secret: 'thissecretrocks',
+	key: 'express.sid',
+	store: sessionStore
+}));
+app.use( app.router );
+app.use( express.errorHandler( { dumpExceptions: true, showStack: true } ) );
+app.use( express.static(__dirname+'/public'));
 
-app.configure('development', function() {
-	// app.use( express.logger('dev') );
-	app.use( express.cookieParser('thissecretrocks') );
-	app.use( express.session( {
-		secret: 'thissecretrocks',
-		key: 'express.sid',
-		store: sessionStore
-	}));
-	app.use( app.router );
-	app.use( express.errorHandler( { dumpExceptions: true, showStack: true } ) );
-	app.use( express.static(__dirname+'/public'));
-});
 
 var oa = new oauth(
 	"https://api.twitter.com/oauth/request_token",
@@ -133,8 +129,8 @@ io.configure( function() {
 	// make the socket.io connection auth and fetch the cookie from dataStore based on connection sid
 	io.set('authorization', function setAuth(data, callback) {
 		
-		console.log('trying to auth on cookie');
-		console.log('handshakeData.headers');
+		//console.log('trying to auth on cookie');
+		//console.log('handshakeData.headers');
 
 		if( !data.headers.cookie ) return callback('socket.io: no found cookie.', false);
 
@@ -158,16 +154,16 @@ io.sockets.on('connection', function(socket) {
 
 	var hs = socket.handshake;
 
-	console.log('socket.io connection!');
+	//console.log('socket.io connection!');
 	
 	/* user checks if logged in. If so he'll receive his basis user info for display */
 	socket.on('checkLogin', function(data) {
-		console.log('checkingLogin');
+		//console.log('checkingLogin');
 		socket.emit( 'receiveLogin', hs.session.user || false );
 	});
 
 	socket.on('updateUserPlayerStatus', function(data) {
-		console.log( JSON.stringify(data) );
+		//console.log( JSON.stringify(data) );
 		socket.broadcast.to(data.room).emit('userUpdates', data );
 	});
 
@@ -184,6 +180,8 @@ io.sockets.on('connection', function(socket) {
 
 	    // Join room
 	    socket.join( roomId );
+	    socket.room = roomId;
+
 
 	    // Send room ID back to client.. confirmation that it happened??
 		socket.emit( 'newRoomId', roomId );
@@ -218,6 +216,7 @@ io.sockets.on('connection', function(socket) {
 	socket.on('joinRoom', function(roomId) {
 
 		socket.join( roomId );
+		socket.room = roomId;
 		socket.emit('roomJoined', roomId);
 
 		// REDIS: add user to room
@@ -229,9 +228,9 @@ io.sockets.on('connection', function(socket) {
 		*/
 		db.get.tubeRoomGetMembers(roomId, function(err, members) {
 
-			console.log('Contents of set for room: ' + roomId );
-			console.log('typeof members: ' + typeof members);
-			console.log( members );
+			//console.log('Contents of set for room: ' + roomId );
+			//console.log('typeof members: ' + typeof members);
+			//console.log( members );
 
 			if(!members) {
 				members = [];
@@ -258,10 +257,17 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('setRoomVid', function( data ) {
-		console.log('setRoomVid data:' + data );
-		console.log(data.roomId + ' - ' + data.vid );
+		//console.log('setRoomVid data:' + data );
+		//console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		socket.broadcast.to(data.roomId).emit('updateRoomVideo', data.vid );
+	});
+
+	socket.on('disconnect', function() {
+		if( typeof socket.room != "undefined" ) {
+			db.remove.userFromRoom( hs.session.user.user_id, socket.room );
+			socket.broadcast.to(socket.roomId).emit('userDisconnected', hs.session.user.user_id );
+		}
 	});
 
 });
