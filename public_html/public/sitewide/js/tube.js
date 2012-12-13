@@ -333,7 +333,7 @@ Tube.Player.prototype.addControls = function() {
 		
 	this.container.find('.load').click( function() {
 		self.player.loadVideoById( parseUrl( parseUrl( $('.youtubeUrl').val() ).vid ) );
-		self.parent.setRoomVid( self.roomId, parseUrl( $('.youtubeUrl').val() ).vid );
+		self.parent.setRoomVid( self.parent.roomId, parseUrl( $('.youtubeUrl').val() ).vid );
 	});
 };
 
