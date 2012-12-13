@@ -277,7 +277,7 @@ io.sockets.on('connection', function(socket) {
 			db.remove.userFromRoom( hs.session.user.user_id, socket.room );
 			socket.broadcast.to(socket.roomId).emit('userDisconnected', hs.session.user.user_id );
 			db.get.userHash( hs.session.user.user_id, function( err, user ) {
-				socket.emit( user.name + ' disconnected.' );
+				console.log( user.name + ' disconnected.' );
 			});
 		}
 	});
