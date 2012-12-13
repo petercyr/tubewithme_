@@ -269,7 +269,7 @@ io.sockets.on('connection', function(socket) {
 		//console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		io.sockets.in(data.roomId).emit('updateRoomVideo', data.vid );
-		console.log( roomId + ' switched to video: ' + data.vid );
+		console.log( data.roomId + ' switched to video: ' + data.vid );
 	});
 
 	socket.on('disconnect', function() {
