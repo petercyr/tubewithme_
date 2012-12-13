@@ -60,59 +60,62 @@ app.get('/auth/twitter', function(req, res) {
 });
 
 app.get('/auth/twitter/callback', function(req, res, next) {
+	if( req.session.oauth ) {
+		req.session.oauth.verifier = req.query.oauth_verifier;
+		var oauth = req.session.oauth;
 
-	req.session.oauth.verifier = req.query.oauth_verifier;
-	var oauth = req.session.oauth;
+		oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
+			if( error ) {
+				console.log('error');
+				res.send('something broke');
+			} else {
+				req.session.oauth.access_token = oauth_access_token;
+				req.session.oauth.access_token_secret = oauth_access_token_secret;
+				req.session.user = results;
 
-	oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
-		if( error ) {
-			console.log('error');
-			res.send('something broke');
-		} else {
-			req.session.oauth.access_token = oauth_access_token;
-			req.session.oauth.access_token_secret = oauth_access_token_secret;
-			req.session.user = results;
-
-			var Twitter = new twit({
-				consumer_key: keys.twitterConsumerKey,
-				consumer_secret: keys.twitterConsumerSecret,
-				access_token: req.session.oauth.access_token,
-				access_token_secret: req.session.oauth.access_token_secret
-			});
-
-			Twitter.get('account/verify_credentials', function(err, reply) {
-				var uid = reply['id_str'];
-
-				db.get.userHash(uid, function(err, user) {
-					/* 
-						if user doesn't exist, grab the user object from twitter and save the parts
-						we want to keep in the user object. Also add a few user properties to the
-						session user information
-					*/
-
-					//console.log( req.session.user );
-					req.session.user.name = reply['name'];
-					req.session.user.profile_image = reply['profile_image_url'];
-					console.log( req.session.user );
-
-					req.session.touch().save();
-
-					if( user === null ) {
-						var userObj = {
-							"uid": reply['id_str'],
-							"name": reply['name'],
-							"screen_name": reply['screen_name'],
-							"profile_image": reply['profile_image_url']
-						};
-						db.save.userSetAdd(uid);
-						db.save.userHashSet(uid, userObj);
-					}
-
-					res.redirect("/");
+				var Twitter = new twit({
+					consumer_key: keys.twitterConsumerKey,
+					consumer_secret: keys.twitterConsumerSecret,
+					access_token: req.session.oauth.access_token,
+					access_token_secret: req.session.oauth.access_token_secret
 				});
-			});
-		}
-	});
+
+				Twitter.get('account/verify_credentials', function(err, reply) {
+					var uid = reply['id_str'];
+
+					db.get.userHash(uid, function(err, user) {
+						/* 
+							if user doesn't exist, grab the user object from twitter and save the parts
+							we want to keep in the user object. Also add a few user properties to the
+							session user information
+						*/
+
+						//console.log( req.session.user );
+						req.session.user.name = reply['name'];
+						req.session.user.profile_image = reply['profile_image_url'];
+						console.log( req.session.user );
+
+						req.session.touch().save();
+
+						if( user === null ) {
+							var userObj = {
+								"uid": reply['id_str'],
+								"name": reply['name'],
+								"screen_name": reply['screen_name'],
+								"profile_image": reply['profile_image_url']
+							};
+							db.save.userSetAdd(uid);
+							db.save.userHashSet(uid, userObj);
+						}
+
+						res.redirect("/");
+					});
+				});
+			}
+		});
+	} else {
+		next( new Error("You're not supposed to be here") );
+	}
 });
 
 // Route all /t/xxxxxxxxx requests to home page
