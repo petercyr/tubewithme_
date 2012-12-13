@@ -214,6 +214,9 @@ io.sockets.on('connection', function(socket) {
 			socket.emit( 'roomUser', user );
 		});
 
+		/* logging */
+		console.log( user.name + ' created room: ' + roomId );
+
 	});
 
 	/* join room */
@@ -251,6 +254,7 @@ io.sockets.on('connection', function(socket) {
 		// Broadcast to everyone else that I joined
 		db.get.userHash( hs.session.user.user_id, function( err, user ) {
 			socket.broadcast.to(roomId).emit('roomUser', user );
+			console.log( user.name + ' joined room: ' + roomId );
 		});
 
 		// Retrieve current video in the room
@@ -263,7 +267,6 @@ io.sockets.on('connection', function(socket) {
 	socket.on('setRoomVid', function( data ) {
 		//console.log('setRoomVid data:' + data );
 		//console.log(data.roomId + ' - ' + data.vid );
-		console.log( data );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		io.sockets.in(data.roomId).emit('updateRoomVideo', data.vid );
 	});
