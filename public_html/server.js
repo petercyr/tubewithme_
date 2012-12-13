@@ -74,8 +74,8 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 			req.session.user = results;
 
 			var Twitter = new twit({
-				consumer_key: _twitterConsumerKey,
-				consumer_secret: _twitterConsumerSecret,
+				consumer_key: keys.twitterConsumerKey,
+				consumer_secret: keys.twitterConsumerSecret,
 				access_token: req.session.oauth.access_token,
 				access_token_secret: req.session.oauth.access_token_secret
 			});
