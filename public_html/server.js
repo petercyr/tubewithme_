@@ -168,7 +168,7 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('updateUserPlayerStatus', function(data) {
 		//console.log( JSON.stringify(data) );
-		socket.broadcast.to(data.room).emit('userUpdates', data );
+		io.sockets.in(data.room).emit('userUpdates', data );
 	});
 
 	/* generate a new room, join it and return it to the user/creator */
