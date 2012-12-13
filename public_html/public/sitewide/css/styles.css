@@ -46,7 +46,7 @@ body {
 	margin-bottom: 85px;
 }
 
-.headLogo img { width: 400px; }
+.headLogo img { width: 400px; border: none;}
 
 .userInfo {
 	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
