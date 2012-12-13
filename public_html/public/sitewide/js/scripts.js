@@ -3,7 +3,7 @@ var tube = null;
 
 $(function() {
 	tube = new Tube({
-		sio: 'http://localhost:8080'
+		sio: '/'
 	});
 });
 
