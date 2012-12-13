@@ -263,7 +263,7 @@ io.sockets.on('connection', function(socket) {
 		//console.log('setRoomVid data:' + data );
 		//console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
-		socket.broadcast.in(data.roomId).emit('updateRoomVideo', data.vid );
+		io.sockets.in(data.roomId).emit('updateRoomVideo', data.vid );
 	});
 
 	socket.on('disconnect', function() {
