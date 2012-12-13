@@ -269,12 +269,16 @@ io.sockets.on('connection', function(socket) {
 		//console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		io.sockets.in(data.roomId).emit('updateRoomVideo', data.vid );
+		console.log( roomId + ' switched to video: ' + data.vid );
 	});
 
 	socket.on('disconnect', function() {
 		if( typeof socket.room != "undefined" ) {
 			db.remove.userFromRoom( hs.session.user.user_id, socket.room );
 			socket.broadcast.to(socket.roomId).emit('userDisconnected', hs.session.user.user_id );
+			db.get.userHash( hs.session.user.user_id, function( err, user ) {
+				socket.emit( user.name + ' disconnected.' );
+			});
 		}
 	});
 
