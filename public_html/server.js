@@ -212,10 +212,9 @@ io.sockets.on('connection', function(socket) {
 		*/
 		db.get.userHash( hs.session.user.user_id, function( err, user ) {
 			socket.emit( 'roomUser', user );
+			/* logging */
+			console.log( user.name + ' created room: ' + roomId );
 		});
-
-		/* logging */
-		console.log( user.name + ' created room: ' + roomId );
 
 	});
 
