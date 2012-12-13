@@ -9,7 +9,8 @@ var express 		= require('express'),
 	cookie 			= require('cookie'),
 	client 			= redis.createClient(),
 	db 				= require('./redis.js'),
-	twit 			= require('twit');
+	twit 			= require('twit'),
+	keys 			= require('.keys');
 
 
 var _twitterConsumerKey = "cuCyJXs7if6BrR5rUjg";
@@ -31,8 +32,8 @@ app.configure('development', function() {
 var oa = new oauth(
 	"https://api.twitter.com/oauth/request_token",
 	"https://api.twitter.com/oauth/access_token",
-	"cuCyJXs7if6BrR5rUjg",
-	"OgccVC8LnD0EIKcOCKOjdr4FePj8ALdlm78QocQTww",
+	keys.twitterConsumerKey,
+	keys.twitterConsumerSecret,
 	"1.0",
 	"http://localhost:8080/auth/twitter/callback",
 	"HMAC-SHA1"
