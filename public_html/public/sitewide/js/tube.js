@@ -159,7 +159,7 @@ Tube.prototype.launch = function(type, vid) {
 		//console.log('updateRoomVideo:' + vid);
 		self.vid = vid;
 		//console.log('self.player', self.player);
-		try() {
+		try {
 			self.player.playVideoById( vid );
 		} catch (e) {};
 	});
