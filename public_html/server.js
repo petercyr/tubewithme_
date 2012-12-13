@@ -94,7 +94,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 						//console.log( req.session.user );
 						req.session.user.name = reply['name'];
 						req.session.user.profile_image = reply['profile_image_url'];
-						console.log( req.session.user );
+						// console.log( req.session.user );
 
 						req.session.touch().save();
 
