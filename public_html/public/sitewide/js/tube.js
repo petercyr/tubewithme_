@@ -223,7 +223,6 @@ Tube.Player.prototype.init = function() {
 	this.player.addEventListener('onError', 'tube.player.onError');
 
 	this.player.loadVideoById( this.parent.vid );
-	this.player.mute();
 	// this.player.cueVideoById( this.parent.vid );
 	// ytplayer.addEventListener('')
 	
