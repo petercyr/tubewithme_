@@ -284,7 +284,7 @@ div.hint ul li span.hint {
 }
 
 .tuberoom .player {
-	height: 448px;
+	height: 338px;
 }
 
 .tuberoom .controls {
@@ -366,4 +366,101 @@ div.hint ul li span.hint {
 .tuberoom .controls .load:active {
 	position:relative;
 	top:1px;
+}
+
+.tuberoom .search { 
+	padding: 10px; 
+}
+
+.tuberoom .search .searchInput {
+	width: 250px;
+	border: 1px inset #CCC;
+	padding: 3px 5px;
+}
+.tuberoom .search .searchInput.loading {
+	background: transparent url(/sitewide/images/loading.gif) no-repeat 385px 6px;
+}
+
+.tuberoom .searchResults .results {
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+.tuberoom .searchResults .results li {
+	width: 334px;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	vertical-align: top;
+	padding-right: 10px;
+	margin-top: 2px;
+	position: relative;
+	background-color: #EFEFEF;
+}
+
+.tuberoom .searchResults .results li img {
+	width: 172px;
+	float: left;
+	margin-right: 5px;
+}
+
+.tuberoom .searchResults .results li span {
+	font-size: 11px;
+	font-family: Verdana;
+}
+
+.tuberoom .searchResults .results li span.duration {
+	display: block;
+	color: white;
+	position: absolute;
+	top: 79px;
+	left: 129px;
+	z-index: 100;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 3px 5px;
+	font-size: 10px;
+}
+
+.tuberoom .searchResults .results li div.options {
+	display: block;
+	position: absolute;
+	bottom: 4px;
+	right: 8px;
+}
+
+.tuberoom .searchResults .results li div.options a {
+	cursor: pointer;
+	font-size: 10px;
+	font-family: verdana;
+	color: #666;
+}
+.tuberoom .searchResults .results li div.options a + a {
+	margin-left: 10px;
+}
+.tuberoom .searchResults .results li div.options a:hover {
+	color: #000;
+}
+
+.tuberoom .search .searchBrowser {
+	display: inline;
+	font-size: 12px;
+	font-family: verdana;
+	display: none;
+}
+
+/* Playlist */
+.tuberoom .playlist ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+
+}
+.tuberoom .playlist li {
+	display: block;
+	padding: 3px;
+}
+.tuberoom .playlist li img {
+	float: left;
+	margin-right: 10px;
+	width: 100px;
 }

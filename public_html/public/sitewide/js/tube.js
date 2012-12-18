@@ -20,6 +20,7 @@ Tube = function( conf, vid ) {
 		users: null,
 		playlist: null
 	};
+	this.playlist = new Playlist(this);
 
 	// Check login status on socket.io connection
 	this.socket.on('connect', function(self) {
@@ -90,7 +91,7 @@ Tube.prototype.launch = function(type, vid) {
         // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
         swfobject.embedSWF("http://www.youtube.com/apiplayer?" +
                            "version=3&enablejsapi=1&playerapiid=player1",
-                           "videoDiv", "690", "448", "9", null, null, params, atts);
+                           "videoDiv", "690", "338", "9", null, null, params, atts);
 
         /* 
 			if type is youtube, create a new room for it, if not, get all the details for that room
@@ -111,6 +112,32 @@ Tube.prototype.launch = function(type, vid) {
 			users: $('.users'),
 			playlist: $('.playlist')
 		};
+
+		/* Initialize playlist */
+		self.playlist.init();
+
+		var youtubeSearchTimer = '';
+		/* live search */
+		$('.searchInput').keydown( function(event) {
+			clearInterval( youtubeSearchTimer );
+			if( $('.searchInput').val() != "" ) {
+				if( event.which == 13 ) {
+						self.socket.emit('searchYoutube', {
+							keywords: encodeURIComponent( $('.searchInput').val() )
+						});
+						$('.searchInput').addClass('loading');
+				} else {
+					youtubeSearchTimer = setTimeout( function() {
+						self.socket.emit('searchYoutube', {
+							keywords: encodeURIComponent( $('.searchInput').val() )
+						});
+					}, 1000);
+					$('.searchInput').addClass('loading');
+				}
+			} else {
+				$('.searchInput').removeClass('loading');
+			}
+		});
 
 	});
 
@@ -152,6 +179,7 @@ Tube.prototype.launch = function(type, vid) {
 	this.socket.on('roomJoined', function(data) {
 		self.roomId = data;
 		$('.room .id').html( data );
+		self.socket.emit('getRoomPlaylist', data );
 	});
 
 	/* Listens for video changes */
@@ -163,6 +191,67 @@ Tube.prototype.launch = function(type, vid) {
 			self.player.playVideoById( vid );
 		} catch (e) {};
 	});
+
+	/* Listen for server sending videos */
+	this.socket.on('playListVideo', function(video){
+		self.playlist.addVideo( video );
+		console.log( 'on playListVideo: ', video );
+	});
+
+	
+
+
+	/* receives youtube results */
+	this.socket.on('youtubeSearchResults', function( results ) {
+
+		$('.searchInput').removeClass('loading');
+		
+		$results = jQuery.parseXML( results );
+		$('.searchResults .results li').fadeOut('fast');
+
+		$('.searchBrowser .startIndex').html( $( $results ).find('startIndex').text() );
+		$('.searchBrowser .maxResults').html( $( $results ).find('totalResults').text() );
+		$('.searchBrowser').css('display', 'inline');
+
+		$( $results ).find('entry').each( function() {
+			var li = $('<li><img class="thumb" /><span class="title"></span><span class="duration"></span><div class="options"><a class="play">Play Now</a><a class="queue">Queue in playlist</a></div></li>');
+			
+			// fetch video ID
+			li.find('a').attr('data-video', $(this).find('videoid').text() );
+			li.find('.thumb').attr('src', $(this).find('thumbnail[height="180"]').attr('url') );
+			li.find('.title').html( $(this).find('title').text().substr(0,50) );
+			li.attr('data-title', $(this).find('title').text() );
+			li.find('.duration').html( rectime( $(this).find('duration').attr('seconds') ) );
+			
+
+			li.find('.play').click( function() {
+				self.player.playVideoById( $(this).attr('data-video') );
+				self.setRoomVid( self.roomId, $(this).attr('data-video') );
+			});
+
+			li.find('.queue').click( function() {
+				var element = this;
+				console.log( this );
+				console.log( $(this).parent() );
+				console.log( $(this).parent().parent() );
+				self.socket.emit('addVideoRoomPlaylist', { 
+					roomId: self.roomId, 
+					vid: $(element).attr('data-video'),
+					img: $(element).parent().parent().find('.thumb').attr('src'),
+					title: $(element).parent().parent().attr('data-title')
+				});
+			});
+
+
+			li.hide();
+
+			$('.searchResults .results').append(li);
+			li.fadeIn();
+		});
+
+		
+	});
+
 
 };
 

@@ -1,4 +1,5 @@
-var express 		= require('express'),
+var http 			= require('http'),
+	express 		= require('express'),
 	app 			= express(),
 	server 			= require('http').createServer(app),
 	io 				= require('socket.io').listen(server),
@@ -10,7 +11,8 @@ var express 		= require('express'),
 	client 			= redis.createClient(),
 	db 				= require('./redis.js'),
 	twit 			= require('twit'),
-	keys 			= require('./.keys');
+	keys 			= require('./.keys'),
+	xml2js 			= require('xml2js');
 
 
 /* App Settings */
@@ -109,7 +111,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 							db.save.userHashSet(uid, userObj);
 						}
 
-						res.redirect("/");
+						res.redirect("/auth/twitter");
 					});
 				});
 			}
@@ -265,7 +267,7 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('setRoomVid', function( data ) {
 		//console.log('setRoomVid data:' + data );
-		//console.log(data.roomId + ' - ' + data.vid );
+		console.log(data.roomId + ' - ' + data.vid );
 		db.save.tubeRoomSetVideo( data.roomId, data.vid );
 		io.sockets.in(data.roomId).emit('updateRoomVideo', data.vid );
 		console.log( data.roomId + ' switched to video: ' + data.vid );
@@ -281,6 +283,69 @@ io.sockets.on('connection', function(socket) {
 		}
 	});
 
+	// Perform youtube search for user
+	socket.on('searchYoutube', function(searchInfo) {
+
+		var searchParams = ( searchInfo.keywords ? 'q=' + searchInfo.keywords : '');
+			searchParams += ( searchInfo.startIndex ? '&start-index=' + searchInfo.startIndex : '');
+			searchParams += ( searchInfo.maxResults ? '&max-results=' + searchInfo.maxResults : '&max-results=10');
+			searchParams += '&v=2';
+
+		console.log( searchParams );
+
+		var options = {
+			host: 'gdata.youtube.com',
+			path: '/feeds/api/videos?' + searchParams,
+			method: 'GET'
+		};
+
+		console.log( options );
+
+		var searchCallback = function( response ) {
+			var str = '';
+
+			response.on('data', function( data ) {
+				str += data;
+			});
+
+			response.on('end', function() {
+				socket.emit('youtubeSearchResults', str );
+			});
+
+		};
+		http.request( options, searchCallback).end();
+	});
+
+	// Add video to playlist
+	socket.on('addVideoRoomPlaylist', function(data) {
+
+		db.save.roomPlaylistSet(data.roomId, data.vid);
+		db.save.videoHashSet( data.vid, data);
+		io.sockets.in(data.roomId).emit('playListVideo', data );
+
+	});
+
+	// Return room playlist
+	socket.on('getRoomPlaylist', function(roomId) {
+		console.log('fetching playlist');
+		db.get.tubeRoomPlaylist( roomId, function( err, playlist ) {
+
+			if( err ) { console.log( err ) }
+
+			if(!playlist) {
+				playlist = [];
+			}
+
+			for( var i=0; i < playlist.length; i++ ) {
+				db.get.videoHashSet( playlist[i], function( err, video ) {
+					if( err ) console.log( err );
+					socket.emit( 'playListVideo', video );
+					console.log('emitting video', video);
+				});
+			}
+
+		});
+	});
 });
 
 server.listen(80);

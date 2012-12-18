@@ -32,6 +32,12 @@ exports.save = {
 	},
 	tubeRoomSetVideo: function(roomId, vid) {
 		client.set("tuberoom:" + roomId + ':vid', vid);
+	},
+	roomPlaylistSet: function(roomId, vid) {
+		client.sadd("tuberoom:" + roomId + ':playlist', vid);
+	},
+	videoHashSet: function(vid, vidData) {
+		client.hmset("video:" + vid, vidData);
 	}
 };
 
@@ -44,6 +50,12 @@ exports.get = {
 	},
 	tubeRoomVideo: function(roomId, callback) {
 		client.get("tuberoom:" + roomId + ':vid', callback);
+	},
+	tubeRoomPlaylist: function(roomId, callback) {
+		client.smembers("tuberoom:" + roomId + ":playlist", callback);
+	},
+	videoHashSet: function(vid, callback) {
+		client.hgetall("video:" + vid, callback);
 	}
 };
 
