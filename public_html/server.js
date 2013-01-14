@@ -111,7 +111,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 							db.save.userHashSet(uid, userObj);
 						}
 
-						res.redirect("/auth/twitter");
+						//res.redirect("/auth/twitter");
 					});
 				});
 			}
