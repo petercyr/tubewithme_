@@ -198,8 +198,6 @@ Tube.prototype.launch = function(type, vid) {
 		console.log( 'on playListVideo: ', video );
 	});
 
-	
-
 
 	/* receives youtube results */
 	this.socket.on('youtubeSearchResults', function( results ) {
@@ -217,11 +215,11 @@ Tube.prototype.launch = function(type, vid) {
 			var li = $('<li><img class="thumb" /><span class="title"></span><span class="duration"></span><div class="options"><a class="play">Play Now</a><a class="queue">Queue in playlist</a></div></li>');
 			
 			// fetch video ID
-			li.find('a').attr('data-video', $(this).find('videoid').text() );
-			li.find('.thumb').attr('src', $(this).find('thumbnail[height="180"]').attr('url') );
+			li.find('a').attr('data-video', $(this).find('yt\\:videoid').text() );
+			li.find('.thumb').attr('src', $(this).find('media\\:thumbnail[height="180"]').attr('url') );
 			li.find('.title').html( $(this).find('title').text().substr(0,50) );
 			li.attr('data-title', $(this).find('title').text() );
-			li.find('.duration').html( rectime( $(this).find('duration').attr('seconds') ) );
+			li.find('.duration').html( rectime( $(this).find('yt\\:duration').attr('seconds') ) );
 			
 
 			li.find('.play').click( function() {
@@ -246,7 +244,9 @@ Tube.prototype.launch = function(type, vid) {
 			li.hide();
 
 			$('.searchResults .results').append(li);
-			li.fadeIn();
+			li.fadeIn('fast', function() {
+				li.css('display', 'inline-block');
+			});
 		});
 
 		

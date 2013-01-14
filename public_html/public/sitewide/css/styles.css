@@ -458,6 +458,7 @@ div.hint ul li span.hint {
 .tuberoom .playlist li {
 	display: block;
 	padding: 3px;
+	font-size: 12px;
 }
 .tuberoom .playlist li img {
 	float: left;
