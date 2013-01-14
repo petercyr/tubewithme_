@@ -91,7 +91,7 @@ Tube.prototype.launch = function(type, vid) {
         // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
         swfobject.embedSWF("http://www.youtube.com/apiplayer?" +
                            "version=3&enablejsapi=1&playerapiid=player1",
-                           "videoDiv", "690", "338", "9", null, null, params, atts);
+                           "videoDiv", "690", "388", "9", null, null, params, atts);
 
         /* 
 			if type is youtube, create a new room for it, if not, get all the details for that room
@@ -231,16 +231,13 @@ Tube.prototype.launch = function(type, vid) {
 		}
 		$('.searchBrowser').css('display', 'inline');
 
-		window.results = [];
+		//window.results = [];
 
 		$( $results ).find('entry').each( function() {
 			var li = $('<li><img class="thumb" /><span class="title"></span><span class="duration"></span><div class="options"><a class="play">Play Now</a><a class="queue">Queue in playlist</a></div></li>');
 			var item = $(this);
 
-			console.log( this );
-			console.log( $(this) );
-
-			window.results.push( this );
+			//window.results.push( this );
 
 			if( $.browser.chrome ) {
 				// fetch video ID

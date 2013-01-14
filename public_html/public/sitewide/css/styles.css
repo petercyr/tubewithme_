@@ -286,7 +286,8 @@ div.hint ul li span.hint {
 }
 
 .tuberoom .player {
-	height: 338px;
+	height: 388px;
+	background-color: #000;
 }
 
 .tuberoom .controls {
