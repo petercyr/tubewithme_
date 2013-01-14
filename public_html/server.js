@@ -67,6 +67,7 @@ app.get('/auth/twitter/callback', function(req, res, next) {
 	oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
 		if( error ) {
 			console.log('error');
+			console.log(error);
 			res.send('something broke');
 		} else {
 			req.session.oauth.access_token = oauth_access_token;
