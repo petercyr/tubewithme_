@@ -26,6 +26,16 @@ app.use( app.router );
 app.use( express.errorHandler( { dumpExceptions: true, showStack: true } ) );
 app.use( express.static(__dirname+'/public'));
 
+var conf = {};
+conf.twitter = {};
+
+app.configure('development', function() {
+	conf.twitter.callback = "http://localhost/auth/twitter/callback"
+});
+app.configure('production', function() {
+	conf.twitter.callback = "http://tubewithme.com/auth/twitter/callback"
+});
+
 io.set('log level', 1); // reduce logging
 
 var oa = new oauth(
@@ -34,7 +44,7 @@ var oa = new oauth(
 	keys.twitterConsumerKey,
 	keys.twitterConsumerSecret,
 	"1.0",
-	"http://tubewithme.com/auth/twitter/callback",
+	conf.twitter.callback,
 	"HMAC-SHA1"
 );
 
@@ -57,17 +67,18 @@ app.get('/auth/twitter', function(req, res) {
 			req.session.oauth = {};
 			req.session.oauth.token = oauth_token;
 			req.session.oauth.token_secret = oauth_token_secret;
-			res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token);
+			res.redirect('https://api.twitter.com/oauth/authorize?oauth_token='+oauth_token);
 		}
 	});
 });
 
-app.get('/auth/twitter/callback', function(req, res, next) {
+app.get('/auth/twitter/callback', function(req, res) {
 	
-	oa.getOAuthAccessToken( oauth.token, oauth.token_secret, oauth.verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
+	oa.getOAuthAccessToken( req.session.oauth.token, req.session.oauth.token_secret, req.query.oauth_verifier, function(error, oauth_access_token, oauth_access_token_secret, results) {
 		if( error ) {
 			console.log('error');
 			console.log(error);
+			console.log( oauth_access_token, oauth_access_token_secret, results );
 			res.send('something broke');
 		} else {
 			req.session.oauth.access_token = oauth_access_token;
