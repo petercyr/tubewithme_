@@ -55,8 +55,6 @@ Tube.prototype.checkQueue = function() {
 	return false;
 };
 
-
-
 Tube.prototype.launch = function(type, vid) {
 	
 	var self = this;
@@ -84,6 +82,8 @@ Tube.prototype.launch = function(type, vid) {
 		Once loaded, create the youtube player and setup the room
 	*/
 	$('.tuberoomContainer').load('/sitewide/html/tuberoom.html', function() {
+
+		$('.container').addClass('active');
 
 		var params = { allowScriptAccess: "always" };
         // The element id of the Flash embed
@@ -139,6 +139,19 @@ Tube.prototype.launch = function(type, vid) {
 			}
 		});
 
+
+		/* scrubber actions */
+		$('.scrubber').click( function(e) {
+			console.log( $(this) );
+			var parentOffset = $(this).parent().offset();
+			var relX = e.pageX - parentOffset.left;
+			console.log( relX );
+
+			console.log( 'self', self );
+			console.log( relX / 690 * self.player.playerStatus.videoDuration );
+
+			self.player.player.seekTo( relX / 690 * self.player.playerStatus.videoDuration );
+		});
 	});
 
 	/* receiving server generated room id */
@@ -207,19 +220,44 @@ Tube.prototype.launch = function(type, vid) {
 		$results = jQuery.parseXML( results );
 		$('.searchResults .results li').fadeOut('fast');
 
-		$('.searchBrowser .startIndex').html( $( $results ).find('startIndex').text() );
-		$('.searchBrowser .maxResults').html( $( $results ).find('totalResults').text() );
+		window.resultXML = results;
+
+		if( $.browser.chrome ) {
+			$('.searchBrowser .startIndex').html( $( $results ).find('startIndex').text() );
+			$('.searchBrowser .maxResults').html( $( $results ).find('totalResults').text() );
+		} else {
+			$('.searchBrowser .startIndex').html( $( $results ).find('openSearch\\:startIndex').text() );
+			$('.searchBrowser .maxResults').html( $( $results ).find('openSearch\\:totalResults').text() );
+		}
 		$('.searchBrowser').css('display', 'inline');
+
+		window.results = [];
 
 		$( $results ).find('entry').each( function() {
 			var li = $('<li><img class="thumb" /><span class="title"></span><span class="duration"></span><div class="options"><a class="play">Play Now</a><a class="queue">Queue in playlist</a></div></li>');
+			var item = $(this);
+
+			console.log( this );
+			console.log( $(this) );
+
+			window.results.push( this );
+
+			if( $.browser.chrome ) {
+				// fetch video ID
+				li.find('a').attr('data-video', item.find("videoid").text() );
+				li.find('.thumb').attr('src', item.find("thumbnail[height='180']").attr('url') );
+				li.find('.title').html( item.find('title').text().substr(0,50) );
+				li.attr('data-title', item.find('title').text() );
+				li.find('.duration').html( rectime( item.find("duration").attr('seconds') ) );
+			} else {
+				// fetch video ID
+				li.find('a').attr('data-video', item.find("yt\\:videoid").text() );
+				li.find('.thumb').attr('src', item.find("media\\:thumbnail[height='180']").attr('url') );
+				li.find('.title').html( item.find('title').text().substr(0,50) );
+				li.attr('data-title', item.find('title').text() );
+				li.find('.duration').html( rectime( item.find("yt\\:duration").attr('seconds') ) );
+			}
 			
-			// fetch video ID
-			li.find('a').attr('data-video', $(this).find('yt\\:videoid').text() );
-			li.find('.thumb').attr('src', $(this).find('media\\:thumbnail[height="180"]').attr('url') );
-			li.find('.title').html( $(this).find('title').text().substr(0,50) );
-			li.attr('data-title', $(this).find('title').text() );
-			li.find('.duration').html( rectime( $(this).find('yt\\:duration').attr('seconds') ) );
 			
 
 			li.find('.play').click( function() {
@@ -297,6 +335,8 @@ Tube.Player = function( player, parent ) {
 	this.addControls();
 	this.updateInterval = null;
 
+	this.progressBar = $('.scrubber .expand');
+
 	this.playerStatus = {
 		videoDuration: null,
 		videoCurrentTime: null,
@@ -370,6 +410,8 @@ Tube.Player.prototype.onPlayerStateChange = function(newState) {
 Tube.Player.prototype.updatePlayerStatus = function() {
 	this.playerStatus.videoDuration = this.player.getDuration();
 	this.playerStatus.videoCurrentTime = this.player.getCurrentTime();
+
+	this.progressBar.css('width', (this.playerStatus.videoCurrentTime / this.playerStatus.videoDuration * 690) + 'px' );
 };
 
 Tube.Player.prototype.reportStatus = function() {
@@ -380,7 +422,7 @@ Tube.Player.prototype.reportStatus = function() {
 		user: self.parent.user.user_id,
 		room: self.parent.roomId,
 		playerStatus: self.playerStatus
-	} );
+	});
 };
 
 Tube.Player.prototype.startReportingPlayerStatus = function( interval ) {
